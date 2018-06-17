@@ -98,6 +98,11 @@ int main(int argc, char *argv[])
     vector<Mat> channels(3);
 
     image = imread(argv[1], 1);
+
+    Size size = image.size();
+    Size newsize = Size(600, size.height*600/size.width);
+    resize(image, image, newsize, 0, 0, INTER_AREA);
+
     cvtColor(image, image_lab, CV_BGR2Lab);
 
     split(image_lab, channels);
@@ -127,9 +132,8 @@ int main(int argc, char *argv[])
     // waitKey(0);
 
     Mat final;
-
     mergeImage(final, image, imagenew);
-    resize(final, final, final.size()/2, 0, 0, INTER_AREA);
+
     imshow("CARTOON", final);
     waitKey(0);
 
