@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
     image = imread(argv[1], 1);
 
     Size size = image.size();
-    Size newsize = Size(600, size.height*600/size.width);
+    Size newsize = Size(1024, size.height*1024/size.width);
     resize(image, image, newsize, 0, 0, INTER_AREA);
 
     cvtColor(image, image_lab, CV_BGR2Lab);
@@ -130,12 +130,17 @@ int main(int argc, char *argv[])
 
     // imshow("CARTOON", imagenew);
     // waitKey(0);
+    {
+        Mat final;
+        mergeImage(final, image, imagenew);
 
-    Mat final;
-    mergeImage(final, image, imagenew);
+        Size size = final.size();
+        Size newsize = Size(1024, size.height*1024/size.width);
+        resize(final, final, newsize, 0, 0, INTER_AREA);
 
-    imshow("CARTOON", final);
-    waitKey(0);
+        imshow("CARTOON", final);
+        waitKey(0);
+    }
 
     return 0;
 }
