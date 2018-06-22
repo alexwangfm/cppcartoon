@@ -7,7 +7,7 @@
 using namespace cv;
 using namespace std;
 
-void colorReduce(cv::Mat& image, int div=10)
+static void colorReduce(cv::Mat& image, int div=10)
 {
     int nl = image.rows;                    // number of lines
     int nc = image.cols * image.channels(); // number of elements per line
@@ -25,7 +25,7 @@ void colorReduce(cv::Mat& image, int div=10)
     }
 }
 
-void detectEdges(cv::Mat& image, cv::Mat& imgTotalC3)
+static void detectEdges(cv::Mat& image, cv::Mat& imgTotalC3)
 {
     Mat image_gray;
     Mat grad;
@@ -74,7 +74,7 @@ void detectEdges(cv::Mat& image, cv::Mat& imgTotalC3)
     cvtColor(grad, imgTotalC3, CV_GRAY2BGR);
 }
 
-void mergeImage(cv::Mat &dst, cv::Mat &src1, cv::Mat &src2)
+static void mergeImage(cv::Mat &dst, cv::Mat &src1, cv::Mat &src2)
 {
     int rows = src1.rows > src2.rows ? src1.rows : src2.rows;//合成图像的行数
 
@@ -91,17 +91,15 @@ void mergeImage(cv::Mat &dst, cv::Mat &src1, cv::Mat &src2)
     src2.copyTo(dst(cv::Rect(src1.cols + 20,0, src2.cols, src2.rows))); //两张图像之间相隔20个像素
 }
 
-int main(int argc, char *argv[])
+int docartoonize(const Mat &input, Mat &output, int width, int height)
 {
     int count = 0;
     Mat image, imagenew, image_lab, image_l, I1, image_merge, imgTotalC3;
     vector<Mat> channels(3);
 
-    image = imread(argv[1], 1);
-
-    Size size = image.size();
+    Size size = input.size();
     Size newsize = Size(1024, size.height*1024/size.width);
-    resize(image, image, newsize, 0, 0, INTER_AREA);
+    resize(input, image, newsize, 0, 0, INTER_AREA);
 
     cvtColor(image, image_lab, CV_BGR2Lab);
 
@@ -127,20 +125,15 @@ int main(int argc, char *argv[])
 
     detectEdges(image, imgTotalC3);
     bitwise_and(imagenew, imgTotalC3, imagenew);
+#if 1
+    Mat final;
+    mergeImage(final, image, imagenew);
 
-    // imshow("CARTOON", imagenew);
-    // waitKey(0);
-    {
-        Mat final;
-        mergeImage(final, image, imagenew);
-
-        Size size = final.size();
-        Size newsize = Size(1024, size.height*1024/size.width);
-        resize(final, final, newsize, 0, 0, INTER_AREA);
-
-        imshow("CARTOON", final);
-        waitKey(0);
-    }
-
+    resize(final, final, Size(width, height/2), 0, 0, INTER_AREA);
+    output = final.clone();
+#else
+    resize(imagenew, imagenew, Size(width, height), 0, 0, INTER_AREA);
+    output = imagenew.clone();
+#endif
     return 0;
 }

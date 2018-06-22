@@ -8,4 +8,13 @@ just implement article: https://blog.csdn.net/kezunhai/article/details/11541873
 install opencv first
 
 mkdir build;cd build;cmake ..;make
-./cppcartoon ../beauty.jpg
+
+For MacOS: ./install_name_tool.sh
+
+For image:
+
+python cartoonize.py ./beauty.jpg
+
+For video:
+
+python cartoonize.py your_mp4_path
